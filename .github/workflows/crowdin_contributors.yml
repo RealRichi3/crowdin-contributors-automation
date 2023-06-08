@@ -41,6 +41,8 @@ jobs:
       - name: Commit and Push Changes
         run: |
           git remote set-url origin https://$GH_TOKEN@github.com/RealRichi3/crowdin-contributors-automation.git
+          git config --global user.name "RealRichi3"
+          git config --global user.email "molunorichie@gmail.com"
           git add .
           git commit -m "Update README file"
           git push origin HEAD:${{ github.ref }}
