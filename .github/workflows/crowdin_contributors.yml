@@ -13,23 +13,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
-        node-version: [14.x]
-      
+        node-version: [16.x]
+
     steps:
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
+      - run: npm ci
+      - run: npm run build --if-present
+
+      - name: Run Crowdin Contributors Bot
+        uses: ./crowdin_contributors_bot
         with:
-          node-version: ${{ matrix.node-version }}
-        env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
-
       - run: |
-          cd crowdin_contributors_bot
           npm install
           npm run start
