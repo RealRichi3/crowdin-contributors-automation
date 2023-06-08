@@ -30,6 +30,6 @@ jobs:
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
 
       - run: |
-          cd crowdin-contributors-automation
+          cd crowdin_contributors_bot
           npm install
           npm run start
