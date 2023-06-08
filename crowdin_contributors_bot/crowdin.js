@@ -3,12 +3,18 @@ const axios = require('axios')
 const fs = require('fs');
 const https = require('https');
 const project_file = require('./crowdin_contributors_report.json')
+
+// Config
 const CONFIG = process.env
+const MINIMUM_WORDS_CONTRIBUTED = CONFIG.MINIMUM_CONTRIBUTION_PER_MEMBER
+const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID
+const CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN
+const TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN
+
 const WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 const FILE_FORMAT = 'json'
-const CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN
-const TTW_CROWDIN_API_DOMAIN = `https://turingway.api.crowdin.com/api/v2`
-const auth = {
+
+const auth_header = {
     headers: {
         'Authorization': 'Bearer ' + CROWDIN_AUTH_TOKEN,
         'Content-Type': 'application/json',
@@ -18,6 +24,7 @@ const auth = {
 function getContributorsData () {
 
 }
+
 async function updateReadme() {
     // should update the readme file with the report
     const contributors_data = project_file.data
@@ -99,7 +106,8 @@ async function downloadProjectReport(url) {
 
 async function start() {
     // Generate project report
-    const generate_report_endpoint = TTW_CROWDIN_API_DOMAIN + '/projects/1/reports'
+    const generate_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/${CROWDIN_PROJECT_ID}/reports`
+    console.log(generate_report_endpoint)
     const response = await axios.post(
         generate_report_endpoint,
         {
@@ -111,7 +119,7 @@ async function start() {
                 dateTo: "2023-06-06T00:00:00Z",
             }
         },
-        auth,
+        auth_header,
     ).then(r => r)
 
     const report_id = response.data.data.identifier
@@ -120,10 +128,10 @@ async function start() {
     setTimeout(() => {
         // Get project report
         async function processProjectReport() {
-            const get_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/1/reports/${report_id}/download`
+            const get_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/${CROWDIN_PROJECT_ID}/reports/${report_id}/download`
             const report_response = await axios.get(
                 get_report_endpoint,
-                auth,
+                auth_header,
             ).then(r => r).catch(e => e)
 
             const file_download_url = report_response.data.data.url
@@ -136,7 +144,7 @@ async function start() {
             console.log(error)
             process.exit(1)
         })
-    }, WAIT_TIME || 1)
+    }, WAIT_TIME || 10000)
 }
 
 start()
