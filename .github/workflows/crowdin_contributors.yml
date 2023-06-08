@@ -35,3 +35,11 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "crowdin_contributors_bot"
+          git config --global user.email "test_bot@nowhere.abc"
+          git add .
+          git commit -m "Update README file"
+          git push
