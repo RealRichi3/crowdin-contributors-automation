@@ -19,19 +19,19 @@ jobs:
         node-version: [16.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
+          CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Run Crowdin Contributors Bot
-        uses: ./crowdin_contributors_bot
-        with:
-          CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
-          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-          MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
-          CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
-      - run: |
+        run: |
           npm install
-          npm run start
+          npm start
