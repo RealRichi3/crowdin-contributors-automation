@@ -10,7 +10,7 @@ const CONFIG = process.env
 const MINIMUM_WORDS_CONTRIBUTED = process.env.MINIMUM_WORDS_CONTRIBUTED
 const CROWDIN_PROJECT_ID = process.env.CROWDIN_PROJECT_ID
 const CROWDIN_AUTH_TOKEN = process.env.CROWDIN_AUTH_TOKEN
-const TTW_CROWDIN_API_DOMAIN = process.env.CROWDIN_API_DOMAIN
+const TTW_CROWDIN_API_DOMAIN = process.env.CROWDIN_ORG_API_DOMAIN
 console.log(process.env.GITHUB_TOKEN)
 const WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 const FILE_FORMAT = 'json'
