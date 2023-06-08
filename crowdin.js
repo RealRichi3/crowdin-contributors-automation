@@ -1,4 +1,5 @@
 require('dotenv').config()
+const core = require('@actions/core');
 const axios = require('axios')
 const fs = require('fs');
 const https = require('https');
@@ -6,11 +7,10 @@ const project_file = require('./crowdin_contributors_report.json')
 
 // Config
 const CONFIG = process.env
-const MINIMUM_WORDS_CONTRIBUTED = CONFIG.MINIMUM_CONTRIBUTION_PER_MEMBER
-const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID
-const CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN
-const TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN
-
+const MINIMUM_WORDS_CONTRIBUTED = core.getInput('MINIMUM_WORDS_CONTRIBUTED')
+const CROWDIN_PROJECT_ID = core.getInput('CROWDIN_PROJECT_ID')
+const CROWDIN_AUTH_TOKEN = core.getInput('CROWDIN_AUTH_TOKEN')
+const TTW_CROWDIN_API_DOMAIN = core.getInput('CROWDIN_API_DOMAIN')
 const WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 const FILE_FORMAT = 'json'
 
