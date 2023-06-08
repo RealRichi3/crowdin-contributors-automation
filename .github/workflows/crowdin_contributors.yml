@@ -40,7 +40,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git set-url origin https://$GH_TOKEN@${{ github_ref }}
+          git set-url origin https://$GH_TOKEN@github.com/RealRichi3/crowdin-contributors-automation.git
           git add .
           git commit -m "Update README file"
           git push origin HEAD:${{ github.ref }}
