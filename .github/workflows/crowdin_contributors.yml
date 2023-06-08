@@ -42,4 +42,4 @@ jobs:
           git config --global user.email "test_bot@nowhere.abc"
           git add .
           git commit -m "Update README file"
-          git push
+          git push origin HEAD:${{ github.ref }}
