@@ -40,7 +40,7 @@ jobs:
 
       - name: Commit and Push Changes
         run: |
-          git set-upstream-to=origin/${{ github.ref }}
+          git set-url origin https://$GH_TOKEN@${{ github_ref }}
           git add .
           git commit -m "Update README file"
           git push origin HEAD:${{ github.ref }}
