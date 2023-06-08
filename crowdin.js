@@ -59,7 +59,7 @@ async function updateReadme() {
 
     table += `</tbody></table>`;
 
-    const readme_file = '../README.md';
+    const readme_file = 'README.md';
     fs.readFile(readme_file, 'utf8', (err, data) => {
         if (err) {
             console.error(`Error reading file: ${err}`);
