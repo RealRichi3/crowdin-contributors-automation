@@ -10,7 +10,7 @@ on:
       - main
 
 env: 
-  NEW_BRANCH_NAME: crowdin-contributors-report-$(date +%s)
+  NEW_BRANCH_NAME: crowdin-contributors-report-1234
 
 jobs:
   build:
