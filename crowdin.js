@@ -8,7 +8,8 @@ const pretty = require('pretty')
 
 // Config
 const CONFIG = process.env
-const MINIMUM_WORDS_CONTRIBUTED = CONFIG.MINIMUM_WORDS_CONTRIBUTED
+const MINIMUM_WORDS_TRANSLATED = parseInt(CONFIG.MINIMUM_WORDS_TRANSLATED, 10)
+console.log('Minimum words translated', MINIMUM_WORDS_TRANSLATED)
 const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID
 const CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN
 const TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN
@@ -32,28 +33,30 @@ async function updateReadme() {
 
     let html = '<table>';
 
+    const contributors_per_line = 5;
+    const total_contributors = contributors_data.length;
 
-    const contributorsPerLine = 5;
-    const totalContributors = contributors_data.length;
-
-    for (let i = 0; i < totalContributors; i += contributorsPerLine) {
+    for (let i = 0; i < total_contributors; i += contributors_per_line) {
         html += '<tr>';
 
-        for (let j = i; j < i + contributorsPerLine && j < totalContributors; j++) {
+        for (let j = i; j < i + contributors_per_line && j < total_contributors; j++) {
             const contributor_info = contributors_data[j];
-            const { fullName: fullname, username, avatarUrl } = contributor_info.user;
+            const { fullName: fullname, username, avatarUrl: picture } = contributor_info.user;
             const { languages, translated: no_of_words_translated, approved } = contributor_info;
+
+            const valid_contribution = no_of_words_translated >= MINIMUM_WORDS_TRANSLATED;
+            if (!valid_contribution) continue;
 
             const languages_translated = languages.map((lang) => lang.id.toUpperCase()).join(', ');
 
-            let userData = `<img alt="logo" style="width: ${100}px" src="${avatarUrl}"/>
+            let user_data = `<img alt="logo" style="width: ${100}px" src="${picture}"/>
                         <br />
                         <sub><b>${fullname}</b></sub>`;
 
-            userData = `<a href="https://crowdin.com/profile/${username}">${userData}</a>`;
+            user_data = `<a href="https://crowdin.com/profile/${username}">${user_data}</a>`;
 
             html += `<td align="center" valign="top">
-                      ${userData}
+                      ${user_data}
                       <br />
                       <sub><b>(${languages_translated})</b></sub></br>
                       <sub><b>${+no_of_words_translated + +approved} words</b></sub>
