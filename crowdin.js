@@ -37,11 +37,13 @@ function parseUserDataToHTML(user_data) {
                             <sub><b>${fullname}</b></sub>`
     const wrapped_user_data = `<a href="https://crowdin.com/profile/${username}">${user_profile}</a>`
 
-    return `<td align="center" valign="top">
+    return `<td align="center" display="flex" flex-direction="column" justify-content="space-between">
             ${wrapped_user_data}
             <br />
             <sub><b>(${languages_translated})</b></sub></br>
-            <sub><b>${+no_of_words_translated + +no_of_words_approved} words</b></sub>
+            <sub><b>${no_of_words_translated} words translated </b></sub> 
+            <br />
+            <sub><b>${no_of_words_approved} words approved </b></sub>
             </td>`
 }
 
@@ -96,11 +98,16 @@ async function updateReadme(table_html) {
             const start_index = data.indexOf(START_MARKER);
             const end_index = data.indexOf(END_MARKER);
 
+            const reference_project_url = project_file.url;
+            const html_reference = `<sub><b>Reference: <a href="${reference_project_url}">Crowdin Project</a></b></sub>`
+
             if (start_index !== -1 && end_index !== -1) {
                 const updated_content =
                     data.substring(0, start_index + START_MARKER.length) +
                     '\n' +
                     table_html +
+                    '\n' +
+                    html_reference +
                     '\n' +
                     data.substring(end_index);
 
@@ -139,7 +146,7 @@ async function generateProjectReport() {
 
 async function downloadProjectReport(url) {
     const file = fs.createWriteStream('crowdin_contributors_report' + `.${FILE_FORMAT}`);
-    
+
     https.get(url, response => {
         response.pipe(file);
     });
