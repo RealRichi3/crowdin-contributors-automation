@@ -40,6 +40,7 @@ jobs:
           git status
           git add README.md
           git commit -m "Generated crowdin contributors report"
+          git config pull.ff only
           git pull origin crowdin-contributors-report
           git push origin crowdin-contributors-report
 
