@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env: 
-  NEW_BRANCH: crowdin-contributors-report-$(date +'%Y-%m-%d-%H-%M-%S')
+  NEW_BRANCH: crowdin-contributors-report-
 
 jobs:
   build:
@@ -24,6 +24,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: true
+
+      - name: Set New Branch Name
+        id: set_branch
+        run: echo "NEW_BRANCH=${NEW_BRANCH}$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -55,7 +59,7 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: $NEW_BRANCH
+          branch: ${{ env.NEW_BRANCH }}}
           base: main
           title: Generated crowdin contributors Report
           body: |
