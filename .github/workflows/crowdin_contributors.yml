@@ -40,6 +40,13 @@ jobs:
       - name: Crowdin Contributors
         run: |
           npm start 
+        env:
+          CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
+          CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
+          START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
+          END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
 
       - name: Commit Changes
         run: |
