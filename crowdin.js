@@ -51,29 +51,34 @@ async function updateReadme() {
     // }
 
 
-    contributors_data.forEach((contributor_info, index) => {
-        const { fullName: fullname, username, avatarUrl } = contributor_info.user
-        const { languages, translated: no_of_words_translated, approved } = contributor_info
+    const contributorsPerLine = 5;
+    const totalContributors = contributors_data.length;
 
-        const languages_translated = languages.map((lang) => lang.name).join(', ');
+    for (let i = 0; i < totalContributors; i += contributorsPerLine) {
         html += '<tr>';
 
-        let userData = `<img alt="logo" style="width: ${100}px" src="${avatarUrl}"/>
+        for (let j = i; j < i + contributorsPerLine && j < totalContributors; j++) {
+            const contributor_info = contributors_data[j];
+            const { fullName: fullname, username, avatarUrl } = contributor_info.user;
+            const { languages, translated: no_of_words_translated, approved } = contributor_info;
+
+            const languages_translated = languages.map((lang) => lang.name).join(', ');
+
+            let userData = `<img alt="logo" style="width: ${100}px" src="${avatarUrl}"/>
                         <br />
                         <sub><b>${fullname}</b></sub>`;
 
-        userData = `<a href="https://crowdin.com/profile/${username}">${userData}</a>`;
+            userData = `<a href="https://crowdin.com/profile/${username}">${userData}</a>`;
 
-        html += `<td align="center" valign="top">
+            html += `<td align="center" valign="top">
                       ${userData}
                       <br />
                       <sub><b>${+no_of_words_translated + +approved} words</b></sub>
                   </td>`;
+        }
 
         html += '</tr>';
-    });
-
-    html += '</table>';
+    }
 
     const table = pretty(html);
 
