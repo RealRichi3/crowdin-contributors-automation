@@ -32,10 +32,10 @@ jobs:
 
       - name: Crowdin Contributors
         run: |
-          npm start 
           git config --global user.email "molunorichie@gmail.com"
           git config --global user.name "Richie"
           git checkout -b crowdin-contributors-report-$(date +%s)
+          npm start 
           git status
           git add README.md
           git commit -m "Generated crowdin contributors report"
