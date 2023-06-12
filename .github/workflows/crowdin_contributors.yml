@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env: 
-  NEW_BRANCH: crowdin-contributors-report-1234
+  NEW_BRANCH: crowdin-contributors-report-$(date +'%Y-%m-%d-%H-%M-%S')
 
 jobs:
   build:
