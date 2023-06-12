@@ -40,6 +40,7 @@ jobs:
           git status
           git add README.md
           git commit -m "Generated crowdin contributors report"
+          git pull origin crowdin-contributors-report --rebase
           git push origin crowdin-contributors-report
 
         env:
@@ -56,6 +57,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: crowdin-contributors-report
+          base: main
           title: Generated crowdin contributors Report
           body: |
             This is an automated pull request for the generated crowdin contributors report.
