@@ -35,6 +35,8 @@ jobs:
           git config --global user.email "molunorichie@gmail.com"
           git config --global user.name "Richie"
           git checkout -b crowdin-contributors-report-$(date +%s)
+          git add README.md
+          git commit -m "Generated crowdin contributors report"
           git push origin crowdin-contributors-report-$(date +%s)
 
       - name: Crowdin Contributors
@@ -47,12 +49,6 @@ jobs:
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
-
-      - name: Commit Changes
-        run: |
-          git add README.md
-          git commit -m "Generated crowdin contributors report"
-          git push origin HEAD
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
