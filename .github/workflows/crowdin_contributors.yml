@@ -65,10 +65,12 @@ jobs:
           pr_body: |                                                                # Full markdown support, requires pr_title to be set
             :crown: *An automated PR*
 
+            Weekly automated PR from `backend_dev` to `dev` branch
+
             _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
-          pr_reviewer: "@RealRichi3"                                     # Comma-separated list (no spaces)
-          pr_assignee: "@RealRichi3"                                                # Comma-separated list (no spaces)
+          pr_reviewer: "@BatoolMM, @RealRichi3"                                     # Comma-separated list (no spaces)
+          pr_assignee: "RealRichi3"                                                # Comma-separated list (no spaces)
           pr_label: "auto-pr"                                                       # Comma-separated list (no spaces)
           pr_draft: false                                                           # Creates pull request as draft
           pr_allow_empty: true                                                      # Creates pull request even if there are no changes
-          github_token: ${{ secrets.GITHUB_TOKEN }}   
+          github_token: ${{ secrets.REPO_TOKEN }}   
