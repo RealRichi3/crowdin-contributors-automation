@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          persist_credentials: true
+          persist-credentials: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -30,33 +30,28 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Create Unique Branch
+        run: |
+          git config --global user.email "molunorichie@gmail.com"
+          git config --global user.name "Richie"
+          git checkout -b crowdin-contributors-report-$(date +%s)
+          git push origin crowdin-contributors-report-$(date +%s)
 
       - name: Crowdin Contributors
         run: |
           npm start 
-          git config --global user.email "molunorichie@gmail.com"
-          git config --global user.name "Richie"
-          git checkout -b crowdin-contributors-report
-          git status
+
+      - name: Commit Changes
+        run: |
           git add README.md
           git commit -m "Generated crowdin contributors report"
-          git pull origin crowdin-contributors-report --rebase
-          git push origin crowdin-contributors-report
-
-        env:
-          CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
-          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-          MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
-          CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
-          START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
-          END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
-
+          git push origin HEAD
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: crowdin-contributors-report
+          branch: crowdin-contributors-report-$(date +%s)
           base: main
           title: Generated crowdin contributors Report
           body: |
