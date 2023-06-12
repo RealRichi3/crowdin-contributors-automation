@@ -31,12 +31,12 @@ jobs:
         run: |
           git config --global user.email "molunorichie@gmail.com"
           git config --global user.name "Richie"
-          git checkout -b crowdin-contributors-report-$(date +%s)
+          git checkout -b ${NEW_BRANCH_NAME}
           npm start 
           git status
           git add README.md
           git commit -m "Generated crowdin contributors report"
-          git push origin crowdin-contributors-report-$(date +%s)
+          git push origin ${NEW_BRANCH_NAME}
         env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
@@ -44,6 +44,7 @@ jobs:
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
+          NEW_BRANCH_NAME: crowdin-contributors-report-$(date +%s)
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
