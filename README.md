@@ -342,5 +342,6 @@
             <br />
             <sub><b>0 words approved </b></sub>
             </td></tr><tr></tr><tr></tr><tr></tr>
-<sub><b>Reference: <a href="https://turingway.crowdin.com/u/projects/1">Crowdin Project</a></b></sub>
+<h2><b>Crowdin contributors</h2></br>
+                                    <h3><b><a href="https://turingway.crowdin.com/u/projects/1">Project link</a></b>
 <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
