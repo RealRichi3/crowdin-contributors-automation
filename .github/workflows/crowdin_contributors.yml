@@ -51,7 +51,6 @@ jobs:
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
-          NEW_BRANCH_NAME: crowdin-contributors-report-$(date +%s)
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
