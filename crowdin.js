@@ -101,7 +101,8 @@ async function updateReadme(table_html) {
             const end_index = data.indexOf(END_MARKER);
 
             const reference_project_url = project_file.url;
-            const html_reference = `<sub><b>Reference: <a href="${reference_project_url}">Crowdin Project</a></b></sub>`
+            const html_reference = `<h2><b>Crowdin contributors</h2></br>
+                                    <h3><b><a href="${reference_project_url}">Project link</a></b>`
 
             if (start_index !== -1 && end_index !== -1) {
                 const updated_content =
@@ -121,6 +122,12 @@ async function updateReadme(table_html) {
             }
             else console.error(`Start and/or end markers not found in the file "${readme_file}".`)
         }
+
+        // Delete the report file
+        fs.unlink('crowdin_contributors_report.json', (err) => {
+            if (err) console.error(`Error deleting file: ${err}`);
+            else console.log('message', 'Report file deleted successfully.')
+        });
     });
 }
 
