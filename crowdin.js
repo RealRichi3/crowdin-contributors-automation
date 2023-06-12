@@ -29,26 +29,8 @@ function getContributorsData() {
 async function updateReadme() {
     // should update the readme file with the report
     const contributors_data = project_file.data
-    // let table = `<table>
-    // <thead>
-    //   <tr>
-    //     <th>S/N</th>
-    //     <th>Profile</th>
-    //     <th>Full Name</th>
-    //     <th>Crowdin Username</th>
-    //     <th>Words Translated</th>
-    //     <th>Languages</th>
-    //   </tr>
-    // </thead>
-    // <tbody>`;
+
     let html = '<table>';
-
-    // for (let i = 0; i < report.length; i += this.config.contributorsPerLine) {
-    //     result.push(report.slice(i, i + this.config.contributorsPerLine));
-    // }
-
-    // for (let i in result) {
-    // }
 
 
     const contributorsPerLine = 5;
@@ -62,7 +44,7 @@ async function updateReadme() {
             const { fullName: fullname, username, avatarUrl } = contributor_info.user;
             const { languages, translated: no_of_words_translated, approved } = contributor_info;
 
-            const languages_translated = languages.map((lang) => lang.name).join(', ');
+            const languages_translated = languages.map((lang) => lang.id.toUpperCase()).join(', ');
 
             let userData = `<img alt="logo" style="width: ${100}px" src="${avatarUrl}"/>
                         <br />
@@ -73,6 +55,7 @@ async function updateReadme() {
             html += `<td align="center" valign="top">
                       ${userData}
                       <br />
+                      <sub><b>(${languages_translated})</b></sub></br>
                       <sub><b>${+no_of_words_translated + +approved} words</b></sub>
                   </td>`;
         }
@@ -80,7 +63,7 @@ async function updateReadme() {
         html += '</tr>';
     }
 
-    const table = pretty(html);
+    const table = html;
 
     const readme_file = 'README.md';
     fs.readFile(readme_file, 'utf8', (err, data) => {
