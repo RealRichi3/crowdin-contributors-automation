@@ -30,16 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create Unique Branch
-        run: |
-          git config --global user.email "molunorichie@gmail.com"
-          git config --global user.name "Richie"
-          git checkout -b crowdin-contributors-report-$(date +%s)
-          git status
-          git add README.md
-          git commit -m "Generated crowdin contributors report"
-          git push origin crowdin-contributors-report-$(date +%s)
-
       - name: Crowdin Contributors
         run: |
           npm start 
@@ -50,6 +40,17 @@ jobs:
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
+          
+      - name: Create Unique Branch
+        run: |
+          git config --global user.email "molunorichie@gmail.com"
+          git config --global user.name "Richie"
+          git checkout -b crowdin-contributors-report-$(date +%s)
+          git status
+          git add README.md
+          git commit -m "Generated crowdin contributors report"
+          git push origin crowdin-contributors-report-$(date +%s)
+
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
