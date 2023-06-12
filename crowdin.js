@@ -8,11 +8,13 @@ const pretty = require('pretty')
 
 // Config
 const CONFIG = process.env
-const MINIMUM_WORDS_TRANSLATED = parseInt(CONFIG.MINIMUM_WORDS_TRANSLATED, 10)
-console.log('Minimum words translated', MINIMUM_WORDS_TRANSLATED)
-const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID
-const CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN
-const TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN
+const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID,
+    CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN,
+    TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN,
+    MINIMUM_WORDS_TRANSLATED = parseInt(CONFIG.MINIMUM_WORDS_TRANSLATED, 10),
+    START_MARKER = CONFIG.START_MARKER,
+    END_MARKER = CONFIG.END_MARKER;
+
 const WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 const FILE_FORMAT = 'json'
 
@@ -23,9 +25,6 @@ const auth_header = {
     },
 }
 
-function getContributorsData() {
-
-}
 function parseUserDataToHTML(user_data) {
     const {
         fullname,
@@ -48,7 +47,8 @@ function parseUserDataToHTML(user_data) {
             <sub><b>${+no_of_words_translated + +no_of_words_approved} words</b></sub>
             </td>`
 }
-async function updateReadme() {
+
+function generateTableHTML() {
     // should update the readme file with the report
     const contributors_data = project_file.data
 
@@ -88,40 +88,32 @@ async function updateReadme() {
         html += '</tr>';
     }
 
-    const table = html;
+    return html;
+}
 
+async function updateReadme(table_html) {
     const readme_file = 'README.md';
     fs.readFile(readme_file, 'utf8', (err, data) => {
-        if (err) {
-            console.error(`Error reading file: ${err}`);
-        } else {
-            const startMarker = '<!-- CROWDIN-CONTRIBUTORS-LIST:START -->';
-            const endMarker = '<!-- CROWDIN-CONTRIBUTORS-LIST:END -->';
-            const startIdx = data.indexOf(startMarker);
-            const endIdx = data.indexOf(endMarker);
+        if (err) console.error(`Error reading file: ${err}`);
+        else {
+            const start_index = data.indexOf(START_MARKER);
+            const end_index = data.indexOf(END_MARKER);
 
-            console.log(startIdx, endIdx);
-
-            if (startIdx !== -1 && endIdx !== -1) {
-                const updatedContent =
-                    data.substring(0, startIdx + startMarker.length) +
+            if (start_index !== -1 && end_index !== -1) {
+                const updated_content =
+                    data.substring(0, start_index + START_MARKER.length) +
                     '\n' +
-                    table +
+                    table_html +
                     '\n' +
-                    data.substring(endIdx);
+                    data.substring(end_index);
 
-                fs.writeFile(readme_file, updatedContent, (err) => {
-                    if (err) {
-                        console.error(`Error writing file: ${err}`);
-                    } else {
-                        console.log(`Markdown file "${readme_file}" updated successfully.`);
-                    }
+                fs.writeFile(readme_file, updated_content, (err) => {
+                    err
+                        ? console.error(`Error writing file: ${err}`)
+                        : console.log('message', 'Markdown file updated successfully.')
                 });
-            } else {
-                console.error(
-                    `Start and/or end markers not found in the file "${readme_file}".`
-                );
             }
+            else console.error(`Start and/or end markers not found in the file "${readme_file}".`)
         }
     });
 }
@@ -138,7 +130,6 @@ async function downloadProjectReport(url) {
 async function start() {
     // Generate project report
     const generate_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/${CROWDIN_PROJECT_ID}/reports`
-    console.log(generate_report_endpoint)
     const response = await axios.post(
         generate_report_endpoint,
         {
@@ -166,13 +157,14 @@ async function start() {
             ).then(r => r).catch(e => e)
 
             const file_download_url = report_response.data.data.url
-
             await downloadProjectReport(file_download_url)
-            await updateReadme()
+
+            const table_html = generateTableHTML()
+            await updateReadme(table_html)
         }
 
         processProjectReport().catch((error) => {
-            console.log(error)
+            console.error(error)
             process.exit(1)
         })
     }, WAIT_TIME || 10000)
@@ -180,6 +172,6 @@ async function start() {
 
 start()
     .catch((error) => {
-        console.log(error)
+        console.error(error)
         process.exit(1)
     })
