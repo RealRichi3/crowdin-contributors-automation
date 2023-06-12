@@ -4,6 +4,13 @@ on:
   schedule:
     - cron: "0 0 * * 1"
   workflow_dispatch:
+  # work on push tomain
+  push:
+    branches:
+      - main
+
+env: 
+  NEW_BRANCH_NAME: crowdin-contributors-report-$(date +%s)
 
 jobs:
   build:
@@ -31,14 +38,12 @@ jobs:
         run: |
           git config --global user.email "molunorichie@gmail.com"
           git config --global user.name "Richie"
-          export NEW_BRANCH_NAME="crowdin-contributors-report-$(date +%s)"
           git checkout -b $NEW_BRANCH_NAME
           npm start 
           git status
           git add README.md
           git commit -m "Generated crowdin contributors report"
           git push origin $NEW_BRANCH_NAME
-          echo "::set-output name=branch_name::$NEW_BRANCH_NAME"
         env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
@@ -52,7 +57,7 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ needs.create-branch.outputs.branch_name }}
+          branch: $NEW_BRANCH_NAME
           base: main
           title: Generated crowdin contributors Report
           body: |
