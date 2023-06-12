@@ -41,16 +41,16 @@ jobs:
 
       - name: Create branch and commit changes
         run: |
-          git checkout -b report
-          git add report.md
-          git commit -m "Generated report"
-          git push origin report
+          git checkout -b crowdin-contributors-report
+          git add README.md
+          git commit -m "Generated crowdin contributors report"
+          git push origin crowdin-contributors-report
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: report
-          title: Generated Report
+          title: Generated crowdin contributors Report
           body: |
-            This is an automated pull request for the generated project report.
+            This is an automated pull request for the generated crowdin contributors report.
