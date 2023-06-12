@@ -1,13 +1,13 @@
 name: Acknowledge Crowdin Contributors
 
-on: 
+on:
   push:
     branches:
       - "main"
   schedule:
     - cron: "0 0 * * 1"
   workflow_dispatch:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,11 +24,12 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
-        with: 
+        with:
           node-version: 16.x
 
       - name: Install dependencies
         run: npm install
+
 
       - name: Crowdin Contributors
         run: npm start
@@ -38,13 +39,18 @@ jobs:
           MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
 
-      - name: Commit and Push Changes
+      - name: Create branch and commit changes
         run: |
-          git remote set-url origin https://RealRichi3:${{ secrets.GH_TOKEN }}@github.com/RealRichi3/crowdin-contributors-automation
-          git config --global user.name "RealRichi3"
-          git config --global user.email "molunorichie@gmail.com"
-          git add .
-          git commit -m "Update README file"
-          git push origin HEAD:${{ github.ref }}
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          git checkout -b report
+          git add report.md
+          git commit -m "Generated report"
+          git push origin report
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: report
+          title: Generated Report
+          body: |
+            This is an automated pull request for the generated project report.
