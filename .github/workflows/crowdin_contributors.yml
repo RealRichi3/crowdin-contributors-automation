@@ -34,19 +34,10 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Crowdin Contributors
+      - name: Generate contributors report
         run: |
-          git config --global user.email "molunorichie@gmail.com"
-          git config --global user.name "Richie"
-          git checkout -b $NEW_BRANCH
+          npm install
           npm start 
-          git status
-          git add README.md
-          git commit -m "Generated crowdin contributors report"
-          git push origin $NEW_BRANCH
         env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
@@ -55,12 +46,29 @@ jobs:
           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+      - name: Commit changes
+        run: |
+          git config --global user.email "molunorichie@gmail.com"
+          git config --global user.name "Richie"
+          git checkout -b $NEW_BRANCH
+          git status
+          git add README.md
+          git commit -m "Generated crowdin contributors report"
+          git push origin $NEW_BRANCH
+
+      - name: pull-request
+        uses: repo-sync/pull-request@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.NEW_BRANCH }}}
-          base: main
-          title: Generated crowdin contributors Report
-          body: |
-            This is an automated pull request for the generated crowdin contributors report.
+          source_branch: ${{ env.NEW_BRANCH }}                                              # If blank, default: triggered branch
+          destination_branch: main                                                 # If blank, default: master
+          pr_title: Update crowdin contributors in README       # Title of pull request
+          pr_body: |                                                                # Full markdown support, requires pr_title to be set
+            :crown: *An automated PR*
+
+            _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
+          pr_reviewer: "@RealRichi3"                                     # Comma-separated list (no spaces)
+          pr_assignee: "@RealRichi3"                                                # Comma-separated list (no spaces)
+          pr_label: "auto-pr"                                                       # Comma-separated list (no spaces)
+          pr_draft: false                                                           # Creates pull request as draft
+          pr_allow_empty: true                                                      # Creates pull request even if there are no changes
+          github_token: ${{ secrets.GITHUB_TOKEN }}   
