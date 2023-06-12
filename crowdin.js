@@ -26,7 +26,28 @@ const auth_header = {
 function getContributorsData() {
 
 }
+function parseUserDataToHTML(user_data) {
+    const {
+        fullname,
+        picture,
+        username,
+        languages_translated,
+        no_of_words_approved,
+        no_of_words_translated
+    } = user_data
 
+    const user_profile = `<img alt="logo" style="width: ${100}px" src="${picture}"/>
+                            <br />
+                            <sub><b>${fullname}</b></sub>`
+    const wrapped_user_data = `<a href="https://crowdin.com/profile/${username}">${user_profile}</a>`
+
+    return `<td align="center" valign="top">
+            ${wrapped_user_data}
+            <br />
+            <sub><b>(${languages_translated})</b></sub></br>
+            <sub><b>${+no_of_words_translated + +no_of_words_approved} words</b></sub>
+            </td>`
+}
 async function updateReadme() {
     // should update the readme file with the report
     const contributors_data = project_file.data
@@ -41,26 +62,27 @@ async function updateReadme() {
 
         for (let j = i; j < i + contributors_per_line && j < total_contributors; j++) {
             const contributor_info = contributors_data[j];
-            const { fullName: fullname, username, avatarUrl: picture } = contributor_info.user;
-            const { languages, translated: no_of_words_translated, approved } = contributor_info;
+            const {
+                fullName: fullname, username,
+                avatarUrl: picture
+            } = contributor_info.user;
+            const {
+                languages,
+                translated: no_of_words_translated,
+                approved: no_of_words_approved
+            } = contributor_info;
 
             const valid_contribution = no_of_words_translated >= MINIMUM_WORDS_TRANSLATED;
             if (!valid_contribution) continue;
 
             const languages_translated = languages.map((lang) => lang.id.toUpperCase()).join(', ');
+            const user_data = {
+                fullname, picture,
+                username, languages_translated,
+                no_of_words_approved, no_of_words_translated
+            }
 
-            let user_data = `<img alt="logo" style="width: ${100}px" src="${picture}"/>
-                        <br />
-                        <sub><b>${fullname}</b></sub>`;
-
-            user_data = `<a href="https://crowdin.com/profile/${username}">${user_data}</a>`;
-
-            html += `<td align="center" valign="top">
-                      ${user_data}
-                      <br />
-                      <sub><b>(${languages_translated})</b></sub></br>
-                      <sub><b>${+no_of_words_translated + +approved} words</b></sub>
-                  </td>`;
+            html += parseUserDataToHTML(user_data);
         }
 
         html += '</tr>';
