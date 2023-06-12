@@ -1,23 +1,20 @@
 require('dotenv').config()
-const core = require('@actions/core');
 const axios = require('axios')
 const fs = require('fs');
 const https = require('https');
 const project_file = require('./crowdin_contributors_report.json')
-const pretty = require('pretty')
 
 // Config
-const CONFIG = process.env
-const CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID,
+const CONFIG = process.env,
+    CROWDIN_PROJECT_ID = CONFIG.CROWDIN_PROJECT_ID,
     CROWDIN_AUTH_TOKEN = CONFIG.CROWDIN_TOKEN,
     TTW_CROWDIN_API_DOMAIN = CONFIG.CROWDIN_ORG_API_DOMAIN,
     MINIMUM_WORDS_TRANSLATED = parseInt(CONFIG.MINIMUM_WORDS_TRANSLATED, 10),
     START_MARKER = CONFIG.START_MARKER,
-    END_MARKER = CONFIG.END_MARKER;
+    END_MARKER = CONFIG.END_MARKER,
+    WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 
-const WAIT_TIME = parseInt(CONFIG.WAIT_TIME)
 const FILE_FORMAT = 'json'
-
 const auth_header = {
     headers: {
         'Authorization': 'Bearer ' + CROWDIN_AUTH_TOKEN,
@@ -118,18 +115,9 @@ async function updateReadme(table_html) {
     });
 }
 
-async function downloadProjectReport(url) {
-    const file = fs.createWriteStream('crowdin_contributors_report' + '.' + FILE_FORMAT);
-    https.get(url, response => {
-        response.pipe(file);
-    });
-
-    console.log('Project report downloaded and saved successfully.');
-}
-
-async function start() {
+async function generateProjectReport() {
     // Generate project report
-    const generate_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/${CROWDIN_PROJECT_ID}/reports`
+    const generate_report_endpoint = `${TTW_CROWDIN_API_DOMAIN}/projects/${CROWDIN_PROJECT_ID}/reports`
     const response = await axios.post(
         generate_report_endpoint,
         {
@@ -146,17 +134,40 @@ async function start() {
 
     const report_id = response.data.data.identifier
 
+    return { report_id }
+}
+
+async function downloadProjectReport(url) {
+    const file = fs.createWriteStream('crowdin_contributors_report' + `.${FILE_FORMAT}`);
+    
+    https.get(url, response => {
+        response.pipe(file);
+    });
+
+    console.log('Project report downloaded and saved successfully.');
+}
+
+async function getProjectReportDownloadURL(report_id) {
+    // Get project report
+    const get_report_endpoint = `${TTW_CROWDIN_API_DOMAIN}/projects/${CROWDIN_PROJECT_ID}/reports/${report_id}/download`
+    const report_response =
+        await axios.get(
+            get_report_endpoint,
+            auth_header,
+        ).then(r => r).catch(e => e)
+
+    const file_download_url = report_response.data.data.url
+
+    return file_download_url
+}
+
+async function start() {
+    const { report_id } = await generateProjectReport()
+    
     // Report takes less than 10 seconds to generate
     setTimeout(() => {
-        // Get project report
         async function processProjectReport() {
-            const get_report_endpoint = TTW_CROWDIN_API_DOMAIN + `/projects/${CROWDIN_PROJECT_ID}/reports/${report_id}/download`
-            const report_response = await axios.get(
-                get_report_endpoint,
-                auth_header,
-            ).then(r => r).catch(e => e)
-
-            const file_download_url = report_response.data.data.url
+            const file_download_url = await getProjectReportDownloadURL(report_id)
             await downloadProjectReport(file_download_url)
 
             const table_html = generateTableHTML()
