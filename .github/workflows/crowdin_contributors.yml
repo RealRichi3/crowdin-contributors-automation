@@ -52,7 +52,7 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: report
+          branch: crowdin-contributors-report
           title: Generated crowdin contributors Report
           body: |
             This is an automated pull request for the generated crowdin contributors report.
