@@ -32,21 +32,22 @@ jobs:
 
 
       - name: Crowdin Contributors
-        run: npm start
+        run: |
+          npm start 
+          git config --global user.email "molunorichie@gmail.com"
+          git config --global user.name "Richie"
+          git checkout -b crowdin-contributors-report
+          git status
+          git add README.md
+          git commit -m "Generated crowdin contributors report"
+          git push origin crowdin-contributors-report
+
         env:
           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           MINIMUM_CONTRIBUTION_PER_MEMBER: ${{ secrets.MINIMUM_CONTRIBUTION_PER_MEMBER }}
           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
 
-      - name: Create branch and commit changes
-        run: |
-          git config --global user.email "molunorichie@gmail.com"
-          git config --global user.name "Richie"
-          git checkout -b crowdin-contributors-report
-          git add README.md
-          git commit -m "Generated crowdin contributors report"
-          git push origin crowdin-contributors-report
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
