@@ -41,6 +41,8 @@ jobs:
 
       - name: Create branch and commit changes
         run: |
+          git config --global user.email "molunorichie@gmail.com"
+          git config --global user.name "Richie"
           git checkout -b crowdin-contributors-report
           git add README.md
           git commit -m "Generated crowdin contributors report"
