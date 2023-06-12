@@ -32,6 +32,8 @@ function parseUserDataToHTML(user_data) {
         no_of_words_translated
     } = user_data
 
+    console.log(user_data)
+
     const user_profile = `<img alt="logo" style="width: ${100}px" src="${picture}"/>
                             <br />
                             <sub><b>${fullname}</b></sub>`
