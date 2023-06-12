@@ -4,6 +4,7 @@ const axios = require('axios')
 const fs = require('fs');
 const https = require('https');
 const project_file = require('./crowdin_contributors_report.json')
+const pretty = require('pretty')
 
 // Config
 const CONFIG = process.env
@@ -21,43 +22,60 @@ const auth_header = {
     },
 }
 
-function getContributorsData () {
+function getContributorsData() {
 
 }
 
 async function updateReadme() {
     // should update the readme file with the report
     const contributors_data = project_file.data
-    let table = `<table>
-    <thead>
-      <tr>
-        <th>S/N</th>
-        <th>Profile</th>
-        <th>Full Name</th>
-        <th>Crowdin Username</th>
-        <th>Words Translated</th>
-        <th>Languages</th>
-      </tr>
-    </thead>
-    <tbody>`;
+    // let table = `<table>
+    // <thead>
+    //   <tr>
+    //     <th>S/N</th>
+    //     <th>Profile</th>
+    //     <th>Full Name</th>
+    //     <th>Crowdin Username</th>
+    //     <th>Words Translated</th>
+    //     <th>Languages</th>
+    //   </tr>
+    // </thead>
+    // <tbody>`;
+    let html = '<table>';
+
+    // for (let i = 0; i < report.length; i += this.config.contributorsPerLine) {
+    //     result.push(report.slice(i, i + this.config.contributorsPerLine));
+    // }
+
+    // for (let i in result) {
+    // }
+
 
     contributors_data.forEach((contributor_info, index) => {
         const { fullName: fullname, username, avatarUrl } = contributor_info.user
-        const { languages, translated: no_of_words_translated } = contributor_info
+        const { languages, translated: no_of_words_translated, approved } = contributor_info
 
         const languages_translated = languages.map((lang) => lang.name).join(', ');
+        html += '<tr>';
 
-        table += `<tr>
-            <td>${index + 1}</td>
-            <td><img src="${avatarUrl}" alt="Profile Picture" /></td>
-            <td>${fullname}</td>
-            <td>${username}</td>
-            <td>${no_of_words_translated}</td>
-            <td>${languages_translated}</td>
-            </tr>`;
+        let userData = `<img alt="logo" style="width: ${100}px" src="${avatarUrl}"/>
+                        <br />
+                        <sub><b>${fullname}</b></sub>`;
+
+        userData = `<a href="https://crowdin.com/profile/${username}">${userData}</a>`;
+
+        html += `<td align="center" valign="top">
+                      ${userData}
+                      <br />
+                      <sub><b>${+no_of_words_translated + +approved} words</b></sub>
+                  </td>`;
+
+        html += '</tr>';
     });
 
-    table += `</tbody></table>`;
+    html += '</table>';
+
+    const table = pretty(html);
 
     const readme_file = 'README.md';
     fs.readFile(readme_file, 'utf8', (err, data) => {
