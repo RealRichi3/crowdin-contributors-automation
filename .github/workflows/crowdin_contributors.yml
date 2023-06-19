@@ -1,76 +1,76 @@
-name: Acknowledge Crowdin Contributors
+# name: Acknowledge Crowdin Contributors
 
-on:
-  schedule:
-    - cron: "0 0 * * 1"
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: "0 0 * * 1"
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
 
-env: 
-  NEW_BRANCH: crowdin-contributors-report-
+# env: 
+#   NEW_BRANCH: crowdin-contributors-report-
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
+#     strategy:
+#       matrix:
+#         node-version: [16.x]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: true
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           persist-credentials: true
 
-      - name: Set New Branch Name
-        id: set_branch
-        run: echo "NEW_BRANCH=${NEW_BRANCH}$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+#       - name: Set New Branch Name
+#         id: set_branch
+#         run: echo "NEW_BRANCH=${NEW_BRANCH}$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: 16.x
 
-      - name: Generate contributors report
-        run: |
-          npm install
-          npm start 
-        env:
-          CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
-          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
-          MINIMUM_WORDS_TRANSLATED: 1
-          CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
-          START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
-          END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
+#       - name: Generate contributors report
+#         run: |
+#           npm install
+#           npm start 
+#         env:
+#           CROWDIN_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
+#           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+#           MINIMUM_WORDS_TRANSLATED: 1
+#           CROWDIN_ORG_API_DOMAIN: ${{ secrets.CROWDIN_ORG_API_DOMAIN }}
+#           START_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:START -->
+#           END_MARKER: <!-- CROWDIN-CONTRIBUTORS-LIST:END -->
 
-      - name: Commit changes
-        run: |
-          git config --global user.email "molunorichie@gmail.com"
-          git config --global user.name "Richie"
-          git checkout -b $NEW_BRANCH
-          git status
-          git add .
-          git commit -m "Generated crowdin contributors report"
-          git push origin $NEW_BRANCH
+#       - name: Commit changes
+#         run: |
+#           git config --global user.email "molunorichie@gmail.com"
+#           git config --global user.name "Richie"
+#           git checkout -b $NEW_BRANCH
+#           git status
+#           git add .
+#           git commit -m "Generated crowdin contributors report"
+#           git push origin $NEW_BRANCH
 
-      - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: ${{ env.NEW_BRANCH }}                                             
-          destination_branch: main                                                
-          pr_title: Update crowdin contributors in README      
-          pr_body: |
-            :crown: *An automated PR*
+#       - name: Create Pull Request
+#         uses: repo-sync/pull-request@v2
+#         with:
+#           source_branch: ${{ env.NEW_BRANCH }}                                             
+#           destination_branch: main                                                
+#           pr_title: Update crowdin contributors in README      
+#           pr_body: |
+#             :crown: *An automated PR*
 
-            Weekly automated PR from `backend_dev` to `dev` branch
+#             Weekly automated PR from `backend_dev` to `dev` branch
 
-            _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
-          pr_reviewer: "@RealRichi3"
-          pr_assignee: "RealRichi3"
-          pr_label: "auto-pr"
-          pr_draft: false
-          pr_allow_empty: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}   
+#             _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
+#           pr_reviewer: "@RealRichi3"
+#           pr_assignee: "RealRichi3"
+#           pr_label: "auto-pr"
+#           pr_draft: false
+#           pr_allow_empty: true
+#           github_token: ${{ secrets.GITHUB_TOKEN }}   
